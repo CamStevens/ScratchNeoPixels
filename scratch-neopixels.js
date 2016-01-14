@@ -35,6 +35,18 @@
     device.send(output.buffer);
   };
   
+  ext.theatreChase = function(startPixel, endPixel, red, green, blue, wait) {
+    var output = new Uint8Array(7);
+    output[0] = 0x06;
+    output[1] = startPixel;
+    output[2] = endPixel;
+    output[3] = red;
+    output[4] = green;
+    output[5] = blue;
+    output[6] = wait;
+    device.send(output.buffer);
+  };
+  
   ext.startRecording = function() {
     var output = new Int8Array(1);
     output[0] = 0x08;
@@ -107,8 +119,9 @@
 
   var descriptor = {
     blocks: [
-      [' ', 'set pixels %n to %n to red:%n, green:%n, blue:%n', 'setPixelColor', 0, 11, 0, 0, 0],
-      [' ', 'rainbox pixels %n to %n with wait %n ms', 'rainbow', 0, 11, 50],
+      [' ', 'set pixels %n to %n to red %n, green %n, blue %n', 'setPixelColor', 0, 11, 0, 0, 0],
+      [' ', 'rainbow pixels %n to %n with wait %n ms', 'rainbow', 0, 11, 50],
+      [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'theatreChase', 0, 11, 255,0,0,50],
       [' ', 'start recording', 'startRecording'],
       [' ', 'stop recording', 'stopRecording'],
       [' ', 'playback recording', 'playbackRecording'],
