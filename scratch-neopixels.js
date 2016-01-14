@@ -98,7 +98,7 @@
 
   var descriptor = {
     blocks: [
-      [' ', 'set pixels %n to %n to (red:%n, green:%n, blue:%n)', 'setPixelColor', 0, 1, 255, 0, 0],
+      [' ', 'set pixels %n to %n to red:%n, green:%n, blue:%n', 'setPixelColor', 0, 11, 0, 0, 0],
       [' ', 'start recording', 'startRecording'],
       [' ', 'stop recording', 'stopRecording'],
       [' ', 'playback recording', 'playbackRecording'],
