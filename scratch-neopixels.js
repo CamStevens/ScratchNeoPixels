@@ -26,6 +26,15 @@
     device.send(output.buffer);
   };
   
+  ext.rainbow = function(startPixel, endPixel, wait) {
+    var output = new Uint8Array(4);
+    output[0] = 0x04;
+    output[1] = startPixel;
+    output[2] = endPixel;
+    output[3] = wait;
+    device.send(output.buffer);
+  };
+  
   ext.startRecording = function() {
     var output = new Int8Array(1);
     output[0] = 0x08;
@@ -99,6 +108,7 @@
   var descriptor = {
     blocks: [
       [' ', 'set pixels %n to %n to red:%n, green:%n, blue:%n', 'setPixelColor', 0, 11, 0, 0, 0],
+      [' ', 'rainbox pixels %n to %n with wait %n ms', 'rainbow', 0, 11, 50],
       [' ', 'start recording', 'startRecording'],
       [' ', 'stop recording', 'stopRecording'],
       [' ', 'playback recording', 'playbackRecording'],
