@@ -1,7 +1,5 @@
 (function(ext) {
 
-  var storedMsg = new Uint8Array(1024);
-
   var connected = false;
   var device = null;
   var poller = null;
@@ -15,21 +13,6 @@
   pingCmd[0] = 1;
 
   function processInput(data) {
-    for (var i=0; i < data.length; i++) {
-      if (parsingMsg) {
-        if (data[i] == END_MSG) {
-          parsingMsg = false;
-          processMsg();
-        } else {
-          storedMsg[msgBytesRead++] = data[i];
-        }
-      } else {
-        if (data[i] == START_MSG) {
-          parsingMsg = true;
-          msgBytesRead = 0;
-        }
-      }
-    }
   }
 
   ext.setPixelColor = function(startPixel, endPixel, red, green, blue) {
