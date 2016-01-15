@@ -16,7 +16,7 @@
   }
 
   ext.setColor = function(startPixel, endPixel, red, green, blue) {
-    colorWipe(startPixel, endPixel, red, green, blue, 'nodelay');
+    this.colorWipe(startPixel, endPixel, red, green, blue, 'nodelay');
   }
   
   ext.colorWipe = function(startPixel, endPixel, red, green, blue, wait) {
