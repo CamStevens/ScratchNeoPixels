@@ -46,11 +46,11 @@
     output[5] = blue;
 
     if (wait === 'slow') {
-      output[6] = 60;
+      output[6] = 100;
     } else if (wait === 'medium') {
-      output[6] = 30;
+      output[6] = 50;
     } else {
-      output[6] = 10;
+      output[6] = 20;
     }
     device.send(output.buffer);
   };
@@ -99,11 +99,11 @@
     output[4] = green;
     output[5] = blue;
     if (wait === 'slow') {
-      output[6] = 60;
+      output[6] = 150;
     } else if (wait === 'medium') {
-      output[6] = 30;
+      output[6] = 100;
     } else {
-      output[6] = 10;
+      output[6] = 50;
     }
     device.send(output.buffer);
   };
