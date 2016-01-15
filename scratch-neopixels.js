@@ -23,7 +23,16 @@
     output[3] = red;
     output[4] = green;
     output[5] = blue;
-    output[6] = wait;
+    
+    if (wait === 'nodelay') {
+      output[6] = 0;
+    } else if (wait === 'slow') {
+      output[6] = 60;
+    } else if (wait === 'medium') {
+      output[6] = 30;
+    } else {
+      output[6] = 10;
+    }
     device.send(output.buffer);
   };
   
@@ -35,7 +44,14 @@
     output[3] = red;
     output[4] = green;
     output[5] = blue;
-    output[6] = wait;
+
+    if (wait === 'slow') {
+      output[6] = 60;
+    } else if (wait === 'medium') {
+      output[6] = 30;
+    } else {
+      output[6] = 10;
+    }
     device.send(output.buffer);
   };
   
@@ -64,7 +80,13 @@
     output[0] = 0x04;
     output[1] = startPixel;
     output[2] = endPixel;
-    output[3] = wait;
+    if (wait === 'slow') {
+      output[3] = 60;
+    } else if (wait === 'medium') {
+      output[3] = 30;
+    } else {
+      output[3] = 10;
+    }
     device.send(output.buffer);
   };
   
@@ -76,7 +98,13 @@
     output[3] = red;
     output[4] = green;
     output[5] = blue;
-    output[6] = wait;
+    if (wait === 'slow') {
+      output[6] = 60;
+    } else if (wait === 'medium') {
+      output[6] = 30;
+    } else {
+      output[6] = 10;
+    }
     device.send(output.buffer);
   };
   
@@ -159,11 +187,11 @@
 
   var descriptor = {
     blocks: [
-      [' ', 'set pixels %n to %n to red %n, green %n, blue %n', 'colorWipe', 0, 11, 0, 0, 0, 0],
-      [' ', 'wipe pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'colorWipe', 0, 11, 0, 0, 0, 10],
-      [' ', 'fade pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'colorFade', 0, 11, 0, 0, 0, 10],
-      [' ', 'rainbow pixels %n to %n with wait %n ms', 'rainbow', 0, 11, 10],
-      [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'theatreChase', 0, 11, 255,0,0,50],
+      [' ', 'set pixels %n to %n to red %n, green %n, blue %n', 'colorWipe', 0, 11, 0, 0, 0, 'nodelay'],
+      [' ', 'wipe pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorWipe', 0, 11, 0, 0, 0, 'fast'],
+      [' ', 'fade pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorFade', 0, 11, 0, 0, 0, 'fast'],
+      [' ', 'rainbow pixels %n to %n %m.speeds', 'rainbow', 0, 11, 'fast'],
+      [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'theatreChase', 0, 11, 255,0,0,'fast'],
       [' ', 'shimmer pixels red %n, green %n, blue %n for %n shimmers', 'shimmer', 226, 121, 35, 100],
       [' ', 'sparkle pixels red %n, green %n, blue %n for %n sparkles', 'sparkle', 255, 0, 0, 100],
       [' ', 'set brightness to %n', 'setBrightness', 255],
@@ -171,6 +199,9 @@
       [' ', 'stop recording', 'stopRecording'],
       [' ', 'playback recording', 'playbackRecording'],
     ],
+    menus: {
+      speeds: ['slow', 'medium', 'fast']
+    },  
     url: 'http://camstevens.github.io/ScratchNeoPixels'
   };
 
