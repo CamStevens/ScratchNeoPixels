@@ -27,6 +27,16 @@
     device.send(output.buffer);
   };
   
+  ext.flame = function(red, green, blue, flickers) {
+    var output = new Uint8Array(5);
+    output[0] = 0x03;
+    output[1] = red;
+    output[2] = green;
+    output[3] = blue;
+    output[4] = flickers;
+    device.send(output.buffer);
+  };
+  
   ext.rainbow = function(startPixel, endPixel, wait) {
     var output = new Uint8Array(4);
     output[0] = 0x04;
@@ -121,6 +131,7 @@
   var descriptor = {
     blocks: [
       [' ', 'color wipe pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'colorWipe', 0, 11, 0, 0, 0, 0],
+      [' ', 'flame red %n, green %n, blue %n for %n flickers', 'flame', 226, 121, 135, 30],
       [' ', 'rainbow pixels %n to %n with wait %n ms', 'rainbow', 0, 11, 50],
       [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'theatreChase', 0, 11, 255,0,0,50],
       [' ', 'start recording', 'startRecording'],
