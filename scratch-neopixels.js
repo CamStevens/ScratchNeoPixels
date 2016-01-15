@@ -15,6 +15,10 @@
   function processInput(data) {
   }
 
+  ext.setColor = function(startPixel, endPixel, red, green, blue) {
+    colorWipe(startPixel, endPixel, red, green, blue, 'nodelay');
+  }
+  
   ext.colorWipe = function(startPixel, endPixel, red, green, blue, wait) {
     var output = new Uint8Array(7);
     output[0] = 0x03;
@@ -28,7 +32,7 @@
       output[6] = 0;
     } else if (wait === 'slow') {
       output[6] = 60;
-    } else if (wait === 'medium') {
+    } else if (wait == 'medium') {
       output[6] = 30;
     } else {
       output[6] = 10;
@@ -187,7 +191,7 @@
 
   var descriptor = {
     blocks: [
-      [' ', 'set pixels %n to %n to red %n, green %n, blue %n', 'colorWipe', 0, 11, 0, 0, 0, 'nodelay'],
+      [' ', 'set pixels %n to %n to red %n, green %n, blue %n', 'setPixels', 0, 11, 0, 0, 0],
       [' ', 'wipe pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorWipe', 0, 11, 0, 0, 0, 'fast'],
       [' ', 'fade pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorFade', 0, 11, 0, 0, 0, 'fast'],
       [' ', 'rainbow pixels %n to %n %m.speeds', 'rainbow', 0, 11, 'fast'],
