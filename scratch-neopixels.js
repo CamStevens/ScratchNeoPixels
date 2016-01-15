@@ -58,6 +58,13 @@
     device.send(output.buffer);
   };
   
+  ext.setBrightness = function(brightness) {
+    var output = new Uint8Array(2);
+    output[0] = 0x0C;
+    output[1] = brightness;
+    device.send(output.buffer);
+  };
+  
   ext.startRecording = function() {
     var output = new Int8Array(1);
     output[0] = 0x08;
@@ -134,6 +141,7 @@
       [' ', 'flame red %n, green %n, blue %n for %n flickers', 'flame', 226, 121, 135, 30],
       [' ', 'rainbow pixels %n to %n with wait %n ms', 'rainbow', 0, 11, 50],
       [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'theatreChase', 0, 11, 255,0,0,50],
+      [' ', 'set brightness to %n', 'setBrightness', 255],
       [' ', 'start recording', 'startRecording'],
       [' ', 'stop recording', 'stopRecording'],
       [' ', 'playback recording', 'playbackRecording'],
