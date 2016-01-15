@@ -17,7 +17,7 @@
 
   ext.colorWipe = function(startPixel, endPixel, red, green, blue, wait) {
     var output = new Uint8Array(7);
-    output[0] = 0x02;
+    output[0] = 0x03;
     output[1] = startPixel;
     output[2] = endPixel;
     output[3] = red;
@@ -29,7 +29,7 @@
   
   ext.flame = function(red, green, blue, flickers) {
     var output = new Uint8Array(5);
-    output[0] = 0x03;
+    output[0] = 0x02;
     output[1] = red;
     output[2] = green;
     output[3] = blue;
