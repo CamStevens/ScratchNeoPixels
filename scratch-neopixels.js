@@ -27,6 +27,18 @@
     device.send(output.buffer);
   };
   
+  ext.colorFade = function(startPixel, endPixel, red, green, blue, wait) {
+    var output = new Uint8Array(7);
+    output[0] = 0x0E;
+    output[1] = startPixel;
+    output[2] = endPixel;
+    output[3] = red;
+    output[4] = green;
+    output[5] = blue;
+    output[6] = wait;
+    device.send(output.buffer);
+  };
+  
   ext.sparkle = function(red, green, blue, sparkles) {
     var output = new Uint8Array(5);
     output[0] = 0x0D;
@@ -147,11 +159,13 @@
 
   var descriptor = {
     blocks: [
-      [' ', 'color wipe pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'colorWipe', 0, 11, 0, 0, 0, 0],
-      [' ', 'shimmer red %n, green %n, blue %n for %n shimmers', 'shimmer', 226, 121, 35, 100],
-      [' ', 'sparkle red %n, green %n, blue %n for %n sparkles', 'sparkle', 255, 0, 0, 100],
+      [' ', 'set pixels %n to %n to red %n, green %n, blue %n', 'colorWipe', 0, 11, 0, 0, 0, 0],
+      [' ', 'wipe pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'colorWipe', 0, 11, 0, 0, 0, 0],
+      [' ', 'fade pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'colorFade', 0, 11, 0, 0, 0, 0],
       [' ', 'rainbow pixels %n to %n with wait %n ms', 'rainbow', 0, 11, 50],
       [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'theatreChase', 0, 11, 255,0,0,50],
+      [' ', 'shimmer pixels red %n, green %n, blue %n for %n shimmers', 'shimmer', 226, 121, 35, 100],
+      [' ', 'sparkle pixels red %n, green %n, blue %n for %n sparkles', 'sparkle', 255, 0, 0, 100],
       [' ', 'set brightness to %n', 'setBrightness', 255],
       [' ', 'start recording', 'startRecording'],
       [' ', 'stop recording', 'stopRecording'],
