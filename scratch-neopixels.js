@@ -120,7 +120,7 @@
 
   var descriptor = {
     blocks: [
-      [' ', 'set pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'setPixelColor', 0, 11, 0, 0, 0, 50],
+      [' ', 'set pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'setPixelColor', 0, 11, 0, 0, 0, 0],
       [' ', 'rainbow pixels %n to %n with wait %n ms', 'rainbow', 0, 11, 50],
       [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'theatreChase', 0, 11, 255,0,0,50],
       [' ', 'start recording', 'startRecording'],
