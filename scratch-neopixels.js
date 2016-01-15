@@ -15,7 +15,7 @@
   function processInput(data) {
   }
 
-  ext.setColor = function(startPixel, endPixel, red, green, blue) {
+  ext.setPixels = function(startPixel, endPixel, red, green, blue) {
     this.colorWipe(startPixel, endPixel, red, green, blue, 'nodelay');
   }
   
