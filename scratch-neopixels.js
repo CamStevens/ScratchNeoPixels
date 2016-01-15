@@ -15,14 +15,15 @@
   function processInput(data) {
   }
 
-  ext.setPixelColor = function(startPixel, endPixel, red, green, blue) {
-    var output = new Uint8Array(6);
+  ext.setPixelColor = function(startPixel, endPixel, red, green, blue, wait) {
+    var output = new Uint8Array(7);
     output[0] = 0x02;
     output[1] = startPixel;
     output[2] = endPixel;
     output[3] = red;
     output[4] = green;
     output[5] = blue;
+    output[6] = wait;
     device.send(output.buffer);
   };
   
@@ -119,7 +120,7 @@
 
   var descriptor = {
     blocks: [
-      [' ', 'set pixels %n to %n to red %n, green %n, blue %n', 'setPixelColor', 0, 11, 0, 0, 0],
+      [' ', 'set pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'setPixelColor', 0, 11, 0, 0, 0, 50],
       [' ', 'rainbow pixels %n to %n with wait %n ms', 'rainbow', 0, 11, 50],
       [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'theatreChase', 0, 11, 255,0,0,50],
       [' ', 'start recording', 'startRecording'],
