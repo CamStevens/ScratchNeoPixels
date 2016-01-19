@@ -85,8 +85,8 @@
     device.send(output.buffer);
   };
   
-  ext.rainbow = function(startPixel, endPixel, wait) {
-    var output = new Uint8Array(4);
+  ext.rainbow = function(startPixel, endPixel, wait, duration) {
+    var output = new Uint8Array(6);
     output[0] = 0x04;
     output[1] = startPixel;
     output[2] = endPixel;
@@ -97,11 +97,13 @@
     } else {
       output[3] = 10;
     }
+    output[4] = duration >> 8;
+    output[5] = duration & 0xFF;
     device.send(output.buffer);
   };
   
-  ext.theatreChase = function(startPixel, endPixel, red, green, blue, wait) {
-    var output = new Uint8Array(7);
+  ext.theatreChase = function(startPixel, endPixel, red, green, blue, wait, duration) {
+    var output = new Uint8Array(9);
     output[0] = 0x06;
     output[1] = startPixel;
     output[2] = endPixel;
@@ -115,6 +117,8 @@
     } else {
       output[6] = 50;
     }
+    output[7] = duration >> 8;
+    output[8] = duration & 0xFF;
     device.send(output.buffer);
   };
   
@@ -200,8 +204,8 @@
       [' ', 'set pixels %n to %n to red %n, green %n, blue %n', 'setPixels', 0, 11, 0, 0, 0],
       [' ', 'wipe pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorWipe', 0, 11, 0, 0, 0, 'fast'],
       [' ', 'fade pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorFade', 0, 11, 0, 0, 0, 'fast'],
-      [' ', 'rainbow pixels %n to %n %m.speeds', 'rainbow', 0, 11, 'fast'],
-      [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'theatreChase', 0, 11, 255,0,0,'fast'],
+      [' ', 'rainbow pixels %n to %n %m.speeds for %n ms', 'rainbow', 0, 11, 'fast', 5000],
+      [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n %m.speeds for %n ms', 'theatreChase', 0, 11, 255,0,0,'fast', 5000],
       [' ', 'shimmer pixels %n to %n to red %n, green %n, blue %n for %n ms', 'shimmer', 0, 11, 226, 121, 35, 5000],
       [' ', 'sparkle pixels %n to %n to red %n, green %n, blue %n for %n ms', 'sparkle', 0, 11, 255, 0, 0, 5000],
       [' ', 'set brightness to %n', 'setBrightness', 255],
