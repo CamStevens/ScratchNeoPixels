@@ -97,7 +97,7 @@
     } else {
       output[3] = 10;
     }
-    output[4] = duration >> 8;
+    output[4] = (duration & 0xFF00) >> 8;
     output[5] = duration & 0xFF;
     device.send(output.buffer);
   };
