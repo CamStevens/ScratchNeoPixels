@@ -59,25 +59,29 @@
     device.send(output.buffer);
   };
   
-  ext.sparkle = function(red, green, blue, duration) {
-    var output = new Uint8Array(6);
+  ext.sparkle = function(startPixel, endPixel, red, green, blue, duration) {
+    var output = new Uint8Array(8);
     output[0] = 0x0D;
-    output[1] = red;
-    output[2] = green;
-    output[3] = blue;
-    output[4] = duration >> 8;
-    output[5] = duration & 0xFF;
+    output[1] = startPixel;
+    output[2] = endPixel;
+    output[3] = red;
+    output[4] = green;
+    output[5] = blue;
+    output[6] = duration >> 8;
+    output[7] = duration & 0xFF;
     device.send(output.buffer);
   };
   
-    ext.shimmer = function(red, green, blue, duration) {
-    var output = new Uint8Array(6);
+    ext.shimmer = function(startPixel, endPixel, red, green, blue, duration) {
+    var output = new Uint8Array(8);
     output[0] = 0x02;
-    output[1] = red;
-    output[2] = green;
-    output[3] = blue;
-    output[4] = duration >> 8;
-    output[5] = duration & 0xFF;
+    output[1] = startPixel;
+    output[2] = endPixel;
+    output[3] = red;
+    output[4] = green;
+    output[5] = blue;
+    output[6] = duration >> 8;
+    output[7] = duration & 0xFF;
     device.send(output.buffer);
   };
   
@@ -198,8 +202,8 @@
       [' ', 'fade pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorFade', 0, 11, 0, 0, 0, 'fast'],
       [' ', 'rainbow pixels %n to %n %m.speeds', 'rainbow', 0, 11, 'fast'],
       [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'theatreChase', 0, 11, 255,0,0,'fast'],
-      [' ', 'shimmer pixels red %n, green %n, blue %n for %n ms', 'shimmer', 226, 121, 35, 5000],
-      [' ', 'sparkle pixels red %n, green %n, blue %n for %n ms', 'sparkle', 255, 0, 0, 5000],
+      [' ', 'shimmer pixels %n to %n to red %n, green %n, blue %n for %n ms', 'shimmer', 0, 11, 226, 121, 35, 5000],
+      [' ', 'sparkle pixels %n to %n to red %n, green %n, blue %n for %n ms', 'sparkle', 0, 11, 255, 0, 0, 5000],
       [' ', 'set brightness to %n', 'setBrightness', 255],
       [' ', 'start recording', 'startRecording'],
       [' ', 'stop recording', 'stopRecording'],
