@@ -15,6 +15,10 @@
   function processInput(data) {
   }
 
+  ext.setPixels = function(startPixel, endPixel, red, green, blue) {
+    this.colorWipe(startPixel, endPixel, red, green, blue, 'nodelay');
+  }
+  
   ext.colorWipe = function(startPixel, endPixel, red, green, blue, wait) {
     var output = new Uint8Array(7);
     output[0] = 0x03;
@@ -23,48 +27,98 @@
     output[3] = red;
     output[4] = green;
     output[5] = blue;
-    output[6] = wait;
+    
+    if (wait === 'nodelay') {
+      output[6] = 0;
+    } else if (wait === 'slow') {
+      output[6] = 60;
+    } else if (wait == 'medium') {
+      output[6] = 30;
+    } else {
+      output[6] = 10;
+    }
     device.send(output.buffer);
   };
   
-  ext.sparkle = function(red, green, blue, sparkles) {
-    var output = new Uint8Array(5);
+  ext.colorFade = function(startPixel, endPixel, red, green, blue, wait) {
+    var output = new Uint8Array(7);
+    output[0] = 0x0E;
+    output[1] = startPixel;
+    output[2] = endPixel;
+    output[3] = red;
+    output[4] = green;
+    output[5] = blue;
+
+    if (wait === 'slow') {
+      output[6] = 100;
+    } else if (wait === 'medium') {
+      output[6] = 50;
+    } else {
+      output[6] = 20;
+    }
+    device.send(output.buffer);
+  };
+  
+  ext.sparkle = function(startPixel, endPixel, red, green, blue, duration) {
+    var output = new Uint8Array(8);
     output[0] = 0x0D;
-    output[1] = red;
-    output[2] = green;
-    output[3] = blue;
-    output[4] = sparkles;
+    output[1] = startPixel;
+    output[2] = endPixel;
+    output[3] = red;
+    output[4] = green;
+    output[5] = blue;
+    output[6] = duration >> 8;
+    output[7] = duration & 0xFF;
     device.send(output.buffer);
   };
   
-    ext.shimmer = function(red, green, blue, shimmers) {
-    var output = new Uint8Array(5);
+    ext.shimmer = function(startPixel, endPixel, red, green, blue, duration) {
+    var output = new Uint8Array(8);
     output[0] = 0x02;
-    output[1] = red;
-    output[2] = green;
-    output[3] = blue;
-    output[4] = shimmers;
+    output[1] = startPixel;
+    output[2] = endPixel;
+    output[3] = red;
+    output[4] = green;
+    output[5] = blue;
+    output[6] = duration >> 8;
+    output[7] = duration & 0xFF;
     device.send(output.buffer);
   };
   
-  ext.rainbow = function(startPixel, endPixel, wait) {
-    var output = new Uint8Array(4);
+  ext.rainbow = function(startPixel, endPixel, wait, duration) {
+    var output = new Uint8Array(6);
     output[0] = 0x04;
     output[1] = startPixel;
     output[2] = endPixel;
-    output[3] = wait;
+    if (wait === 'slow') {
+      output[3] = 60;
+    } else if (wait === 'medium') {
+      output[3] = 30;
+    } else {
+      output[3] = 10;
+    }
+    output[4] = (duration & 0xFF00) >> 8;
+    output[5] = duration & 0xFF;
     device.send(output.buffer);
   };
   
-  ext.theatreChase = function(startPixel, endPixel, red, green, blue, wait) {
-    var output = new Uint8Array(7);
+  ext.theatreChase = function(startPixel, endPixel, red, green, blue, wait, duration) {
+    var output = new Uint8Array(9);
     output[0] = 0x06;
     output[1] = startPixel;
     output[2] = endPixel;
     output[3] = red;
     output[4] = green;
     output[5] = blue;
-    output[6] = wait;
+    if (wait === 'slow') {
+      output[6] = 150;
+    } else if (wait === 'medium') {
+      output[6] = 100;
+    } else {
+      output[6] = 50;
+    }
+    output[7] = duration >> 8;
+    output[8] = duration & 0xFF;
     device.send(output.buffer);
   };
   
@@ -147,16 +201,21 @@
 
   var descriptor = {
     blocks: [
-      [' ', 'color wipe pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'colorWipe', 0, 11, 0, 0, 0, 0],
-      [' ', 'shimmer red %n, green %n, blue %n for %n shimmers', 'shimmer', 226, 121, 35, 100],
-      [' ', 'sparkle red %n, green %n, blue %n for %n sparkles', 'sparkle', 255, 0, 0, 100],
-      [' ', 'rainbow pixels %n to %n with wait %n ms', 'rainbow', 0, 11, 50],
-      [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n with wait %n ms', 'theatreChase', 0, 11, 255,0,0,50],
+      [' ', 'set pixels %n to %n to red %n, green %n, blue %n', 'setPixels', 0, 11, 0, 0, 0],
+      [' ', 'wipe pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorWipe', 0, 11, 0, 0, 0, 'fast'],
+      [' ', 'fade pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorFade', 0, 11, 0, 0, 0, 'fast'],
+      [' ', 'rainbow pixels %n to %n %m.speeds for %n ms', 'rainbow', 0, 11, 'fast', 5000],
+      [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n %m.speeds for %n ms', 'theatreChase', 0, 11, 255,0,0,'fast', 5000],
+      [' ', 'shimmer pixels %n to %n to red %n, green %n, blue %n for %n ms', 'shimmer', 0, 11, 226, 121, 35, 5000],
+      [' ', 'sparkle pixels %n to %n to red %n, green %n, blue %n for %n ms', 'sparkle', 0, 11, 255, 0, 0, 5000],
       [' ', 'set brightness to %n', 'setBrightness', 255],
       [' ', 'start recording', 'startRecording'],
       [' ', 'stop recording', 'stopRecording'],
       [' ', 'playback recording', 'playbackRecording'],
     ],
+    menus: {
+      speeds: ['slow', 'medium', 'fast']
+    },  
     url: 'http://camstevens.github.io/ScratchNeoPixels'
   };
 
