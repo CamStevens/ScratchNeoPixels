@@ -221,6 +221,18 @@
         return '0,255,0';
       case 'blue':
         return '0,0,255';
+      case 'white':
+       return '255,255,255';
+      case 'yellow':
+       return '255,255,0';
+      case 'cyan':
+       return '0,255,255';
+      case 'magenta':
+       return '255,0,255';
+      case 'orange':
+       return '255,165,0';
+      case 'pink':
+       return '255,192,203';
     }  
   }
   
@@ -302,7 +314,7 @@
     menus: {
       speeds: ['slow', 'medium', 'fast'],
       rings: ['all pixels', 'outer ring', 'inner ring', 'center pixel'],
-      colors: ['off', 'red', 'green', 'blue']
+      colors: ['off', 'red', 'green', 'blue', 'white', 'yellow', 'cyan', 'magenta', 'orange', 'pink']
     },  
     url: 'http://camstevens.github.io/ScratchNeoPixels'
   };
