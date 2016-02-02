@@ -249,7 +249,7 @@
       [' ', 'start recording', 'startRecording'],
       [' ', 'stop recording', 'stopRecording'],
       [' ', 'playback recording', 'playbackRecording'],
-      ['r', '%m.rings pixels', 'pixelsForRing', 'outer'],
+      ['r', '%m.rings pixels', 'pixelsForRing', 'outer ring'],
       ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 36],
       ['r', 'color %m.colors', 'stringForColor', 'off'],
     ],
