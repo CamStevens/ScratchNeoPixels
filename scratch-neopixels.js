@@ -220,6 +220,10 @@
     }  
   }
   
+  ext.stringForRGB = function(red, green, blue) {
+   return '' + red + ',' + green + ',' + blue; 
+  }
+  
   ext._getStatus = function() {
     if (!connected)
       return { status:1, msg:'Disconnected' };
@@ -277,6 +281,7 @@
       ['r', ' %m.rings ', 'pixelsForRing', 'all pixels'],
       ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 36],
       ['r', ' %m.colors ', 'stringForColor', 'red'],
+      ['r', 'red %n green %n blue %n', 'stringForRGB', 255, 0, 0],
       [' ', 'turn off all pixels', 'setPixels', '0,36', '0,0,0'],
       [' ', 'fill %s using color %s', 'setPixels', '', ''],
       [' ', 'wipe %s using color %s %m.speeds', 'colorWipe', '', '', 'fast'],
