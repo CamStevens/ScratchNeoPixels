@@ -1,4 +1,18 @@
-(function(ext) {
+/*
+ *This program is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *This program is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ (function(ext) {
 
   var connected = false;
   var device = null;
@@ -15,25 +29,43 @@
   function processInput(data) {
   }
 
-  ext.setPixels = function(pixelRange, pixelColor) {
-    var range = pixelRange.split(',');
+  function getRed(pixelColor) {
     var colors = pixelColor.split(',');
-    var startPixel = +range[0]
-    var endPixel = +range[1];
-    var red = +colors[0];
-    var green = +colors[1];
-    var blue = +colors[2];
-    this.colorWipe(startPixel, endPixel, red, green, blue, 'nodelay');
+    return colors[0];
   }
   
-  ext.colorWipe = function(startPixel, endPixel, red, green, blue, wait) {
+  function getGreen(colors) {
+    var colors = pixelColor.split(',');
+    return colors[1];
+  }
+  
+  function getBlue(colors) {
+    var colors = pixelColor.split(',');
+    return colors[2];
+  }
+  
+  function getStartPixel(pixelRange) {
+        var range = pixelRange.split(',');
+        return range[0];
+  }
+  
+  function getEndPixel(pixelRange) {
+        var range = pixelRange.split(',');
+        return range[1];
+  }
+  
+  ext.setPixels = function(pixelRange, pixelColor) {
+    this.colorWipe(getStartPixel(pixelRange), getEndPixel(pixelRange), getRed(pixelColor), getGreen(pixelColor), getBlue(pixelColor), 'nodelay');
+  }
+  
+  ext.colorWipe = function(pixelRange, pixelColor, wait) {
     var output = new Uint8Array(7);
     output[0] = 0x03;
-    output[1] = startPixel;
-    output[2] = endPixel;
-    output[3] = red;
-    output[4] = green;
-    output[5] = blue;
+    output[1] = getStartPixel(pixelRange);
+    output[2] = getEndPixel(pixelRange);
+    output[3] = getRed(pixelColor);
+    output[4] = getGreen(pixelColor);
+    output[5] = getBlue(pixelColor);
     
     if (wait === 'nodelay') {
       output[6] = 0;
@@ -47,14 +79,14 @@
     device.send(output.buffer);
   };
   
-  ext.colorFade = function(startPixel, endPixel, red, green, blue, wait) {
+  ext.colorFade = function(pixelRange, pixelColor, wait) {
     var output = new Uint8Array(7);
     output[0] = 0x0E;
-    output[1] = startPixel;
-    output[2] = endPixel;
-    output[3] = red;
-    output[4] = green;
-    output[5] = blue;
+    output[1] = getStartPixel(pixelRange);
+    output[2] = getEndPixel(pixelRange);
+    output[3] = getRed(pixelColor);
+    output[4] = getGreen(pixelColor);
+    output[5] = getBlue(pixelColor);
 
     if (wait === 'slow') {
       output[6] = 100;
@@ -66,37 +98,40 @@
     device.send(output.buffer);
   };
   
-  ext.sparkle = function(startPixel, endPixel, red, green, blue, duration) {
+  ext.sparkle = function(pixelRange, pixelColor, duration) {
     var output = new Uint8Array(8);
+    var millis = floor(duration * 1000);
     output[0] = 0x0D;
-    output[1] = startPixel;
-    output[2] = endPixel;
-    output[3] = red;
-    output[4] = green;
-    output[5] = blue;
-    output[6] = duration >> 8;
-    output[7] = duration & 0xFF;
+    output[1] = getStartPixel(pixelRange);
+    output[2] = getEndPixel(pixelRange);
+    output[3] = getRed(pixelColor);
+    output[4] = getGreen(pixelColor);
+    output[5] = getBlue(pixelColor);
+    output[6] = millis >> 8;
+    output[7] = millis & 0xFF;
     device.send(output.buffer);
   };
   
-    ext.shimmer = function(startPixel, endPixel, red, green, blue, duration) {
+    ext.shimmer = function(pixelRange, pixelColor, duration) {
     var output = new Uint8Array(8);
+    var millis = floor(duration * 1000);
     output[0] = 0x02;
-    output[1] = startPixel;
-    output[2] = endPixel;
-    output[3] = red;
-    output[4] = green;
-    output[5] = blue;
-    output[6] = duration >> 8;
-    output[7] = duration & 0xFF;
+    output[1] = getStartPixel(pixelRange);
+    output[2] = getEndPixel(pixelRange);
+    output[3] = getRed(pixelColor);
+    output[4] = getGreen(pixelColor);
+    output[5] = getBlue(pixelColor);
+    output[6] = millis >> 8;
+    output[7] = millis & 0xFF;
     device.send(output.buffer);
   };
   
-  ext.rainbow = function(startPixel, endPixel, wait, duration) {
+  ext.rainbow = function(pixelRange, wait, duration) {
     var output = new Uint8Array(6);
+    var millis = floor(duration * 1000);
     output[0] = 0x04;
-    output[1] = startPixel;
-    output[2] = endPixel;
+    output[1] = getStartPixel(pixelRange);
+    output[2] = getEndPixel(pixelRange);
     if (wait === 'slow') {
       output[3] = 60;
     } else if (wait === 'medium') {
@@ -104,19 +139,20 @@
     } else {
       output[3] = 10;
     }
-    output[4] = (duration & 0xFF00) >> 8;
-    output[5] = duration & 0xFF;
+    output[4] = (millis & 0xFF00) >> 8;
+    output[5] = millis & 0xFF;
     device.send(output.buffer);
   };
   
-  ext.theatreChase = function(startPixel, endPixel, red, green, blue, wait, duration) {
+  ext.theatreChase = function(pixelRange, pixelColor, wait, duration) {
     var output = new Uint8Array(9);
+    var millis = floor(duration * 1000);
     output[0] = 0x06;
-    output[1] = startPixel;
-    output[2] = endPixel;
-    output[3] = red;
-    output[4] = green;
-    output[5] = blue;
+    output[1] = getStartPixel(pixelRange);
+    output[2] = getEndPixel(pixelRange);
+    output[3] = getRed(pixelColor);
+    output[4] = getGreen(pixelColor);
+    output[5] = getBlue(pixelColor);
     if (wait === 'slow') {
       output[6] = 150;
     } else if (wait === 'medium') {
@@ -124,8 +160,8 @@
     } else {
       output[6] = 50;
     }
-    output[7] = duration >> 8;
-    output[8] = duration & 0xFF;
+    output[7] = millis >> 8;
+    output[8] = millis & 0xFF;
     device.send(output.buffer);
   };
   
@@ -238,20 +274,20 @@
 
   var descriptor = {
     blocks: [
-      [' ', 'set %s to %s', 'setPixels', '0, 36', '0, 0, 0'],
-      [' ', 'wipe pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorWipe', 0, 11, 0, 0, 0, 'fast'],
-      [' ', 'fade pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorFade', 0, 11, 0, 0, 0, 'fast'],
-      [' ', 'rainbow pixels %n to %n %m.speeds for %n ms', 'rainbow', 0, 11, 'fast', 5000],
-      [' ', 'theatre chase pixels %n to %n to red %n, green %n, blue %n %m.speeds for %n ms', 'theatreChase', 0, 11, 255,0,0,'fast', 5000],
-      [' ', 'shimmer pixels %n to %n to red %n, green %n, blue %n for %n ms', 'shimmer', 0, 11, 226, 121, 35, 5000],
-      [' ', 'sparkle pixels %n to %n to red %n, green %n, blue %n for %n ms', 'sparkle', 0, 11, 255, 0, 0, 5000],
+      ['r', '%m.rings pixels', 'pixelsForRing', 'outer ring'],
+      ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 36],
+      ['r', '%m.colors', 'stringForColor', 'off'],
+      [' ', 'fill %s to color %s', 'setPixels', '0,36', '0,0,0'],
+      [' ', 'wipe %s to color %s %m.speeds', 'colorWipe', '0,36', '255,0,0', 'fast'],
+      [' ', 'fade %s to color %s %m.speeds', 'colorFade', '0,36','255,0,0', 'fast'],
+      [' ', 'rainbow %s %m.speeds for %n seconds', 'rainbow', '0,36', 'fast', 5.0],
+      [' ', 'theatre chase %s using color %s %m.speeds for %n seconds', 'theatreChase', '0,36','255,0,0','fast', 5.0],
+      [' ', 'shimmer %s using color %s for %n seconds', 'shimmer', '0,36', '226,121,35', 5.0],
+      [' ', 'sparkle %s using color %s for %n seconds', 'sparkle', '0,36', '255,0,0', 5.0],
       [' ', 'set brightness to %n', 'setBrightness', 255],
       [' ', 'start recording', 'startRecording'],
       [' ', 'stop recording', 'stopRecording'],
       [' ', 'playback recording', 'playbackRecording'],
-      ['r', '%m.rings pixels', 'pixelsForRing', 'outer ring'],
-      ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 36],
-      ['r', 'color %m.colors', 'stringForColor', 'off'],
     ],
     menus: {
       speeds: ['slow', 'medium', 'fast'],
