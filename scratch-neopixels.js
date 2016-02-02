@@ -54,6 +54,10 @@
         return range[1];
   }
   
+  ext.turnOffAllPixels = function() {
+    this.setPixels('0,36', '0,0,0');
+  }
+  
   ext.setPixels = function(pixelRange, pixelColor) {
     this.colorWipe(pixelRange, pixelColor, 'nodelay');
   }
@@ -282,7 +286,7 @@
       ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 36],
       ['r', ' %m.colors ', 'stringForColor', 'red'],
       ['r', 'red %n green %n blue %n', 'stringForRGB', 255, 0, 0],
-      [' ', 'turn off all pixels', 'setPixels', '0,36', '0,0,0'],
+      [' ', 'turn off all pixels', 'turnOffAllPixels'],
       [' ', 'fill %s using color %s', 'setPixels', '', ''],
       [' ', 'wipe %s using color %s %m.speeds', 'colorWipe', '', '', 'fast'],
       [' ', 'fade %s to color %s %m.speeds', 'colorFade', '','', 'fast'],
