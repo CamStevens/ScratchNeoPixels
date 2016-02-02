@@ -1,9 +1,17 @@
-/****************************************************/
-/*                                                  */
-/*    NeoPixelRecorder                              */
-/*    created by Cam Stevens 2015                   */
-/*                                                  */
-/****************************************************/
+/*
+ *This program is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *This program is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <Adafruit_NeoPixel.h>
 #include <EEPROM.h>
@@ -87,10 +95,10 @@ uint8_t currentCommand = 0;
 unsigned long nextCommandMillis;
 
 /// The digital output pin connected to the NeoPixel
-#define NEO_PIXEL_PIN 8
+#define NEO_PIXEL_PIN 9
 
 /// The number of pixels on the NeoPixel
-#define PIXEL_COUNT 12
+#define PIXEL_COUNT 37
 
 /// Instantiates the NeoPixel
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, NEO_PIXEL_PIN);
@@ -98,22 +106,25 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, NEO_PIXEL_PIN);
 /// Indicates whether a command is currently being executed for the current pixel
 uint8_t pixelInUse[PIXEL_COUNT];
 
+/// Used to represent commands currently being executed.
 typedef struct PixelCommand_t {
-  uint8_t commandCode;
-  uint8_t wait;
-  unsigned long nextMillis;
-  unsigned long duration;
-  uint8_t red;
-  uint8_t green;
-  uint8_t blue;
-  uint8_t startPixel;
-  uint8_t endPixel;
-  uint8_t currentPixel;
-  uint8_t currentStep;
+  uint8_t commandCode;        // The command code
+  uint8_t wait;               // The time between each step
+  unsigned long nextMillis;   // The time when the next step should be executed
+  unsigned long duration;     // The duration for this command
+  uint8_t red;                // The red color component for this command
+  uint8_t green;              // The green color component for this command
+  uint8_t blue;               // The blue color component for this command
+  uint8_t startPixel;         // The starting pixel for this command 
+  uint8_t endPixel;           // The ending pixels for this command 
+  uint8_t currentPixel;       // The pixels for the command command step
+  uint8_t currentStep;        // The current step being executed
 } PixelCommand;
 
-#define COMMAND_BUFFER_ENTRIES 20
+/// The number of commands that can be executing simultaneously.
+#define COMMAND_BUFFER_ENTRIES 20 
 
+/// The buffer of commands currently being executed
 PixelCommand commandBuffer[COMMAND_BUFFER_ENTRIES];
 
 /**
@@ -143,7 +154,7 @@ void setup() {
 }
 
 /*
- * Performs repeated functions.  Retrieves a command from Serial or EEPROM and executes it.
+ * Retrieves a command from Serial or EEPROM if available.  Then steps all currently executing commands.
  */
 void loop() {
 
@@ -436,7 +447,7 @@ void processStopRecordingCommand() {
 
 /**
  * 
- * Queue up a COMMAND_COLOR_WIPE command
+ * Buffer a COMMAND_COLOR_WIPE command
  * 
  */
 void startColorWipeCommand() {
@@ -454,12 +465,12 @@ void startColorWipeCommand() {
   command.green = getNextCommandByte();
   command.blue = getNextCommandByte();
   command.wait = getNextCommandByte();
-  command.nextMillis = millis();
 
   //
   // Wait for the pixels to become free, then queue this command
   //
   waitForPixels(command);
+  command.nextMillis = millis();
 
   //
   // If there is no wait, render all the pixels right now.
@@ -476,7 +487,7 @@ void startColorWipeCommand() {
     }
     strip.show();
   } else {
-    queueCommand(command);
+    bufferCommand(command);
   }
 }
 
@@ -515,7 +526,7 @@ void processColorWipeCommand(int commandIndex) {
 
 /**
  * 
- * Queue up a COMMAND_FADE command
+ * Buffer a COMMAND_FADE command
  * 
  */
 void startFadeCommand() {
@@ -530,14 +541,14 @@ void startFadeCommand() {
   command.green = getNextCommandByte();
   command.blue = getNextCommandByte();
   command.wait = getNextCommandByte();
-  command.nextMillis = millis();
   command.currentStep = 0;
 
   //
   // Wait for the pixels to become free, then queue this command
   //
   waitForPixels(command);
-  queueCommand(command);
+  command.nextMillis = millis();
+  bufferCommand(command);
 }
 
 /**
@@ -599,7 +610,7 @@ void processFadeCommand(int commandIndex) {
 
 /**
  * 
- * Queue up a COMMAND_SHIMMER command
+ * Buffer a COMMAND_SHIMMER command
  * 
  */
 void startShimmerCommand() {
@@ -613,14 +624,14 @@ void startShimmerCommand() {
   command.red = getNextCommandByte();
   command.green = getNextCommandByte();
   command.blue = getNextCommandByte();
-  command.nextMillis = millis();
-  command.duration = command.nextMillis + (((unsigned long) getNextCommandByte()) << 8) + getNextCommandByte();
 
   //
   // Wait for the pixels to become free, then queue this command
   //
   waitForPixels(command);
-  queueCommand(command);
+  command.nextMillis = millis();
+  command.duration = command.nextMillis + (((unsigned long) getNextCommandByte()) << 8) + getNextCommandByte();
+  bufferCommand(command);
 }
 
 /**
@@ -661,7 +672,7 @@ void processShimmerCommand(int commandIndex) {
 
 /**
  * 
- * Queue up a COMMAND_SPARKLE command
+ * Buffer a COMMAND_SPARKLE command
  * 
  */
 void startSparkleCommand() {
@@ -675,19 +686,19 @@ void startSparkleCommand() {
   command.red = getNextCommandByte();
   command.green = getNextCommandByte();
   command.blue = getNextCommandByte();
-  command.nextMillis = millis();
-  command.duration = command.nextMillis + (((unsigned long) getNextCommandByte()) << 8) + getNextCommandByte();
   command.currentStep = 0;
 
   //
   // Wait for the pixels to become free, set the initial pixel colors, then queue this command
   //
   waitForPixels(command);
+  command.nextMillis = millis();
+  command.duration = command.nextMillis + (((unsigned long) getNextCommandByte()) << 8) + getNextCommandByte();
   for(int pixel=command.startPixel; pixel<=command.endPixel; pixel++) {
       strip.setPixelColor(pixel, command.red, command.green, command.blue);
   }
   strip.show();
-  queueCommand(command);
+  bufferCommand(command);
 }
  
 /**
@@ -752,7 +763,7 @@ void processSetBrightnessCommand() {
 
 /**
  * 
- * Queue up a COMMAND_RAINBOW command
+ * Buffer a COMMAND_RAINBOW command
  * 
  */
 void startRainbowCommand() {
@@ -764,15 +775,16 @@ void startRainbowCommand() {
   command.startPixel = getNextCommandByte();
   command.endPixel = getNextCommandByte();
   command.wait = getNextCommandByte();
-  command.nextMillis = millis();
-  command.duration = command.nextMillis + (((unsigned long) getNextCommandByte()) << 8) + getNextCommandByte();
   command.currentStep = 0;
 
   //
   // Wait for the pixels to become free, then queue this command
   //
   waitForPixels(command);
-  queueCommand(command);
+
+  command.nextMillis = millis();
+  command.duration = command.nextMillis + (((unsigned long) getNextCommandByte()) << 8) + getNextCommandByte();
+  bufferCommand(command);
 }
 
 /**
@@ -810,7 +822,7 @@ void processRainbowCommand(int commandIndex) {
 
 /**
  * 
- * Queue up a COMMAND_THEATRE_CHASE command
+ * Buffer a COMMAND_THEATRE_CHASE command
  * 
  */
  void startTheatreChaseCommand() {
@@ -826,14 +838,14 @@ void processRainbowCommand(int commandIndex) {
   command.blue = getNextCommandByte();
   command.wait = getNextCommandByte();
   command.nextMillis = millis();
-  command.duration = command.nextMillis + (((unsigned long) getNextCommandByte()) << 8) + getNextCommandByte();
-  command.currentStep = command.startPixel;
  
   //
   // Wait for the pixels to become free, then queue this command
   //
   waitForPixels(command);
-  queueCommand(command);
+  command.duration = command.nextMillis + (((unsigned long) getNextCommandByte()) << 8) + getNextCommandByte();
+  command.currentStep = command.startPixel;
+  bufferCommand(command);
 }
  
 /**
@@ -1014,10 +1026,10 @@ void stepPixelCommands() {
 
 /**
  * 
- * Adds the specified command to the list of pixel animation commands that are currently executing.
+ * Adds the specified command to the buffer of pixel animation commands that are currently executing.
  * 
  */
-void queueCommand(struct PixelCommand_t command) {
+void bufferCommand(struct PixelCommand_t command) {
   for (int i = 0; i < COMMAND_BUFFER_ENTRIES; i++) {
     if (!commandBuffer[i].commandCode) {
       commandBuffer[i] = command;
