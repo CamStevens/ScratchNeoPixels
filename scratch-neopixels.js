@@ -155,12 +155,15 @@
   };
   
   ext.pixelsForRing = function(ringName) {
-    if (ringName == 'outer') {
-      return pixelsForInterval (0, 23);
-    } else if (ringName == 'middle') {
-      return pixelsForInterval (24, 35);
-    } else {
-      return pixelsForInterval (36, 36);
+    switch (ringName) {
+      case 'outer ring':
+        return pixelsForInterval (0, 23);
+      case 'inner ring':
+        return pixelsForInterval (24, 35);
+      case 'all pixels':
+        return pixelsForInterval (0, 36);
+      case 'center pixel':
+        return pixelsForInterval (36, 36);
     }
   };
   
@@ -235,7 +238,7 @@
 
   var descriptor = {
     blocks: [
-      [' ', 'set pixels %s to %s', 'setPixels', '0, 36', '0, 0, 0'],
+      [' ', 'set %s to %s', 'setPixels', '0, 36', '0, 0, 0'],
       [' ', 'wipe pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorWipe', 0, 11, 0, 0, 0, 'fast'],
       [' ', 'fade pixels %n to %n to red %n, green %n, blue %n %m.speeds', 'colorFade', 0, 11, 0, 0, 0, 'fast'],
       [' ', 'rainbow pixels %n to %n %m.speeds for %n ms', 'rainbow', 0, 11, 'fast', 5000],
@@ -252,7 +255,7 @@
     ],
     menus: {
       speeds: ['slow', 'medium', 'fast'],
-      rings: ['outer', 'middle', 'inner'],
+      rings: ['all pixels', 'outer ring', 'inner ring', 'center pixel'],
       colors: ['off', 'red', 'green', 'blue']
     },  
     url: 'http://camstevens.github.io/ScratchNeoPixels'
