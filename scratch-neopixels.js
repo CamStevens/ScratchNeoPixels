@@ -55,7 +55,7 @@
   }
   
   ext.setPixels = function(pixelRange, pixelColor) {
-    this.colorWipe(getStartPixel(pixelRange), getEndPixel(pixelRange), getRed(pixelColor), getGreen(pixelColor), getBlue(pixelColor), 'nodelay');
+    this.colorWipe(pixelRange, pixelColor, 'nodelay');
   }
   
   ext.colorWipe = function(pixelRange, pixelColor, wait) {
