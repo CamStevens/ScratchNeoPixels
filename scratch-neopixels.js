@@ -193,13 +193,13 @@
   ext.pixelsForRing = function(ringName) {
     switch (ringName) {
       case 'outer ring':
-        return pixelsForInterval (0, 23);
+        return '0,23';
       case 'inner ring':
-        return pixelsForInterval (24, 35);
+        return '24,35';
       case 'all pixels':
-        return pixelsForInterval (0, 36);
+        return '0,36';
       case 'center pixel':
-        return pixelsForInterval (36, 36);
+        return '36,36';
     }
   };
   
