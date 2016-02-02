@@ -249,13 +249,13 @@
       [' ', 'start recording', 'startRecording'],
       [' ', 'stop recording', 'stopRecording'],
       [' ', 'playback recording', 'playbackRecording'],
-      ['r', '%m.rings ring', 'pixelsForRing', 'outer'],
+      ['r', '%m.rings pixels', 'pixelsForRing', 'outer'],
       ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 36],
       ['r', 'color %m.colors', 'stringForColor', 'off'],
     ],
     menus: {
       speeds: ['slow', 'medium', 'fast'],
-      rings: ['all pixels', 'outer ring', 'inner ring', 'center pixel'],
+      rings: ['all', 'outer ring', 'inner ring', 'center'],
       colors: ['off', 'red', 'green', 'blue']
     },  
     url: 'http://camstevens.github.io/ScratchNeoPixels'
