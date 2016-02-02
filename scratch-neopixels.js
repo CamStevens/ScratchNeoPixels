@@ -100,7 +100,7 @@
   
   ext.sparkle = function(pixelRange, pixelColor, duration) {
     var output = new Uint8Array(8);
-    var millis = floor(duration * 1000);
+    var millis = Math.floor(duration * 1000);
     output[0] = 0x0D;
     output[1] = getStartPixel(pixelRange);
     output[2] = getEndPixel(pixelRange);
@@ -114,7 +114,7 @@
   
     ext.shimmer = function(pixelRange, pixelColor, duration) {
     var output = new Uint8Array(8);
-    var millis = floor(duration * 1000);
+    var millis = Math.floor(duration * 1000);
     output[0] = 0x02;
     output[1] = getStartPixel(pixelRange);
     output[2] = getEndPixel(pixelRange);
@@ -128,7 +128,7 @@
   
   ext.rainbow = function(pixelRange, wait, duration) {
     var output = new Uint8Array(6);
-    var millis = floor(duration * 1000);
+    var millis = Math.floor(duration * 1000);
     output[0] = 0x04;
     output[1] = getStartPixel(pixelRange);
     output[2] = getEndPixel(pixelRange);
@@ -146,7 +146,7 @@
   
   ext.theatreChase = function(pixelRange, pixelColor, wait, duration) {
     var output = new Uint8Array(9);
-    var millis = floor(duration * 1000);
+    var millis = Math.floor(duration * 1000);
     output[0] = 0x06;
     output[1] = getStartPixel(pixelRange);
     output[2] = getEndPixel(pixelRange);
