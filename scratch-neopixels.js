@@ -34,12 +34,12 @@
     return colors[0];
   }
   
-  function getGreen(colors) {
+  function getGreen(pixelColor) {
     var colors = pixelColor.split(',');
     return colors[1];
   }
   
-  function getBlue(colors) {
+  function getBlue(pixelColor) {
     var colors = pixelColor.split(',');
     return colors[2];
   }
