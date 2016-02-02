@@ -274,11 +274,11 @@
 
   var descriptor = {
     blocks: [
-      ['r', '%m.rings pixels', 'pixelsForRing', 'outer ring'],
+      ['r', ' %m.rings ', 'pixelsForRing', 'all pixels'],
       ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 36],
-      ['r', '%m.colors', 'stringForColor', 'off'],
-      [' ', 'fill %s to color %s', 'setPixels', '0,36', '0,0,0'],
-      [' ', 'wipe %s to color %s %m.speeds', 'colorWipe', '0,36', '255,0,0', 'fast'],
+      ['r', ' %m.colors ', 'stringForColor', 'red'],
+      [' ', 'fill %s using color %s', 'setPixels', '0,36', '0,0,0'],
+      [' ', 'wipe %s using color %s %m.speeds', 'colorWipe', '0,36', '255,0,0', 'fast'],
       [' ', 'fade %s to color %s %m.speeds', 'colorFade', '0,36','255,0,0', 'fast'],
       [' ', 'rainbow %s %m.speeds for %n seconds', 'rainbow', '0,36', 'fast', 5.0],
       [' ', 'theatre chase %s using color %s %m.speeds for %n seconds', 'theatreChase', '0,36','255,0,0','fast', 5.0],
@@ -291,7 +291,7 @@
     ],
     menus: {
       speeds: ['slow', 'medium', 'fast'],
-      rings: ['all', 'outer ring', 'inner ring', 'center'],
+      rings: ['all pixels', 'outer ring', 'inner ring', 'center pixel'],
       colors: ['off', 'red', 'green', 'blue']
     },  
     url: 'http://camstevens.github.io/ScratchNeoPixels'
