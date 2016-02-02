@@ -168,6 +168,19 @@
     return '' + start + ',' + end;
   }
   
+  ext.stringForColor = function(colorName) {
+    switch (colorName) {
+      case 'off':
+        return '0,0,0';
+      case 'red':
+        return '255,0,0';
+      case 'green':
+        return '0,255,0';
+      case 'blue':
+        return '0,0,255';
+    }  
+  }
+  
   ext._getStatus = function() {
     if (!connected)
       return { status:1, msg:'Disconnected' };
@@ -235,10 +248,12 @@
       [' ', 'playback recording', 'playbackRecording'],
       ['r', '%m.rings ring', 'pixelsForRing', 'outer'],
       ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 36],
+      ['r', 'color %m.colors', 'stringForColor', 'off'],
     ],
     menus: {
       speeds: ['slow', 'medium', 'fast'],
-      rings: ['outer', 'middle', 'inner']
+      rings: ['outer', 'middle', 'inner'],
+      colors: ['off', 'red', 'green', 'blue']
     },  
     url: 'http://camstevens.github.io/ScratchNeoPixels'
   };
