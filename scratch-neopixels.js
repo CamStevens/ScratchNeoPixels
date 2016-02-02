@@ -277,6 +277,7 @@
       ['r', ' %m.rings ', 'pixelsForRing', 'all pixels'],
       ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 36],
       ['r', ' %m.colors ', 'stringForColor', 'red'],
+      [' ', 'turn off all pixels', 'setPixels', '0,36', '0,0,0'],
       [' ', 'fill %s using color %s', 'setPixels', '', ''],
       [' ', 'wipe %s using color %s %m.speeds', 'colorWipe', '', '', 'fast'],
       [' ', 'fade %s to color %s %m.speeds', 'colorFade', '','', 'fast'],
