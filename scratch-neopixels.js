@@ -270,7 +270,7 @@
   };
 
   ext._shutdown = function() {
-    ext.setPixelColor(0, 11, 0, 0, 0);
+    ext.setPixels('0,36', '0,0,0');
     if (device) device.close();
     if (poller) clearInterval(poller);
     device = null;
