@@ -244,9 +244,9 @@
   
   ext._getStatus = function() {
     if (!connected)
-      return { status:1, msg:'Disconnected' };
+      return { status:1, msg:'NeoPixel Disconnected' };
     else
-      return { status:2, msg:'Connected' };
+      return { status:2, msg:'NeoPixel Connected' };
   };
 
   ext._deviceRemoved = function(dev) {
