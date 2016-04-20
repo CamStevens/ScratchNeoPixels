@@ -276,6 +276,7 @@
    if (!device) return;
    
     console.log('Attempting to connect to device: ' + device.id);
+    sendAttempts = 0;
     device.open({ stopBits: 0, bitRate: 38400, ctsFlowControl: 0 });
     device.set_receive_handler(function(data) {
       console.log('Received response from device: ' + device.id);
