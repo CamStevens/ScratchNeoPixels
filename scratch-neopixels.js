@@ -244,9 +244,9 @@
   
   ext._getStatus = function() {
     if (!connected)
-      return { status:1, msg:'Disconnected' };
+      return { status:1, msg:'NeoPixel Disconnected' };
     else
-      return { status:2, msg:'Connected' };
+      return { status:2, msg:'NeoPixel Connected' };
   };
 
   ext._deviceRemoved = function(dev) {
@@ -254,15 +254,26 @@
   };
 
   var poller = null;
+  
+  var potentialDevices = [];
   ext._deviceConnected = function(dev) {
-    sendAttempts = 0;
-    connected = true;
-    if (device) return;
-    
-    device = dev;
+   potentialDevices.push(dev);
+
+   if (!device) {
+    tryNextDevice();
+   }
+  };
+
+  function tryNextDevice() {
+   // If potentialDevices is empty, device will be undefined.
+   // That will get us back here next time a device is connected.
+   device = potentialDevices.shift();
+   if (!device) return;
+   
     device.open({ stopBits: 0, bitRate: 38400, ctsFlowControl: 0 });
     device.set_receive_handler(function(data) {
       sendAttempts = 0;
+      connected = true;
       var inputData = new Uint8Array(data);
       processInput(inputData);
     }); 
@@ -272,7 +283,7 @@
       /* TEMPORARY WORKAROUND
          Since _deviceRemoved is not
          called while using serial devices */
-      if (sendAttempts >= 10) {
+      if (sendAttempts >= 2) {
         connected = false;
         device.close();
         device = null;
