@@ -269,7 +269,6 @@
         device.open({ stopBits: 0, bitRate: 38400, ctsFlowControl: 0 });
         device.set_receive_handler(function(data) {
             processInput(data);
-            }
         });
 
         // Tell the PicoBoard to send a input data every 1 second
