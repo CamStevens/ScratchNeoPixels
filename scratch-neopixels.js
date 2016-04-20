@@ -257,6 +257,7 @@
   
   var potentialDevices = [];
   ext._deviceConnected = function(dev) {
+   console.log('Device ' + dev + ' discovered.');
    potentialDevices.push(dev);
 
    if (!device) {
@@ -270,12 +271,12 @@
    device = potentialDevices.shift();
    if (!device) return;
    
+    console.log('Attempting to connect to device: ' + device);
     device.open({ stopBits: 0, bitRate: 38400, ctsFlowControl: 0 });
     device.set_receive_handler(function(data) {
+      console.log('Received response from device: ' + device);
       sendAttempts = 0;
       connected = true;
-      var inputData = new Uint8Array(data);
-      processInput(inputData);
     }); 
 
     poller = setInterval(function() {
@@ -284,6 +285,7 @@
          Since _deviceRemoved is not
          called while using serial devices */
       if (sendAttempts >= 2) {
+        console.log('Maximum ping attempts exceeded for device: ' + device);
         connected = false;
         device.close();
         device = null;
@@ -291,8 +293,9 @@
         return;
       }
       
-      device.send(pingCmd.buffer); 
       sendAttempts++;
+      console.log('Sending ping attempt ' + sendAttempts + ' to device: ' + device);
+      device.send(pingCmd.buffer); 
 
     }, 1000);
 
