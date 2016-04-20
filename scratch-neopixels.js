@@ -27,6 +27,13 @@
   pingCmd[0] = 1;
 
   function processInput(data) {
+   var bytes = new Uint8Array(data);
+
+   if (watchdog && bytes[0] == 0xF0 && bytes[1] == 0x0F) {
+       // Seems to be a valid NeoPixel.
+       clearTimeout(watchdog);
+       watchdog = null;
+   }
   }
 
   function getRed(pixelColor) {
@@ -242,57 +249,62 @@
    return '' + red + ',' + green + ',' + blue; 
   }
   
-  ext._getStatus = function() {
-    if (!connected)
-      return { status:1, msg:'NeoPixel Disconnected' };
-    else
-      return { status:2, msg:'NeoPixel Connected' };
-  };
+      // Extension API interactions
+    var potentialDevices = [];
+    ext._deviceConnected = function(dev) {
+        potentialDevices.push(dev);
 
-  ext._deviceRemoved = function(dev) {
-    // Not currently implemented with serial devices
-  };
-
-  var poller = null;
-  ext._deviceConnected = function(dev) {
-    sendAttempts = 0;
-    connected = true;
-    if (device) return;
+        if (!device) {
+            tryNextDevice();
+        }
+    }
     
-    device = dev;
-    device.open({ stopBits: 0, bitRate: 38400, ctsFlowControl: 0 });
-    device.set_receive_handler(function(data) {
-      sendAttempts = 0;
-      var inputData = new Uint8Array(data);
-      processInput(inputData);
-    }); 
+    var watchdog = null;
+    function tryNextDevice() {
+        // If potentialDevices is empty, device will be undefined.
+        // That will get us back here next time a device is connected.
+        device = potentialDevices.shift();
+        if (!device) return;
 
-    poller = setInterval(function() {
+        device.open({ stopBits: 0, bitRate: 38400, ctsFlowControl: 0 });
+        device.set_receive_handler(function(data) {
+            processInput(data);
+            }
+        });
 
-      /* TEMPORARY WORKAROUND
-         Since _deviceRemoved is not
-         called while using serial devices */
-      if (sendAttempts >= 10) {
-        connected = false;
-        device.close();
+        // Tell the PicoBoard to send a input data every 1 second
+        poller = setInterval(function() {
+            device.send(pingCmd.buffer);
+        }, 1000);
+        watchdog = setTimeout(function() {
+            // This device didn't get good data in time, so give up on it. Clean up and then move on.
+            // If we get good data then we'll terminate this watchdog.
+            clearInterval(poller);
+            poller = null;
+            device.set_receive_handler(null);
+            device.close();
+            device = null;
+            tryNextDevice();
+        }, 2000);
+    };
+
+    ext._deviceRemoved = function(dev) {
+        if(device != dev) return;
+        if(poller) poller = clearInterval(poller);
         device = null;
-        clearInterval(poller);
-        return;
-      }
-      
-      device.send(pingCmd.buffer); 
-      sendAttempts++;
+    };
 
-    }, 1000);
+    ext._shutdown = function() {
+        if(device) device.close();
+        if(poller) poller = clearInterval(poller);
+        device = null;
+    };
 
-  };
-
-  ext._shutdown = function() {
-    ext.setPixels('0,36', '0,0,0');
-    if (device) device.close();
-    if (poller) clearInterval(poller);
-    device = null;
-  };
+    ext._getStatus = function() {
+        if(!device) return {status: 1, msg: 'NeoPixel disconnected'};
+        if(watchdog) return {status: 1, msg: 'Probing for NeoPixel'};
+        return {status: 2, msg: 'NeoPixel connected'};
+    }
 
   var descriptor = {
     blocks: [
