@@ -258,6 +258,9 @@
   var potentialDevices = [];
   ext._deviceConnected = function(dev) {
    console.log('Device ' + dev.id + ' discovered.');
+   if (dev.id == 'COM1') {
+    return;
+   }
    potentialDevices.push(dev);
 
    if (!device) {
