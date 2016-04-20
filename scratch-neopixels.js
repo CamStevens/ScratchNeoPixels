@@ -289,7 +289,7 @@
       /* TEMPORARY WORKAROUND
          Since _deviceRemoved is not
          called while using serial devices */
-      if (sendAttempts >= 2) {
+      if (sendAttempts >= 10) {
         console.log('Maximum ping attempts exceeded for device: ' + device.id);
         connected = false;
         device.close();
