@@ -278,6 +278,8 @@
     console.log('Attempting to connect to device: ' + device.id);
     sendAttempts = 0;
     device.open({ stopBits: 0, bitRate: 38400, ctsFlowControl: 0 });
+    
+    setTimeout(function() {
     device.set_receive_handler(function(data) {
       console.log('Received response from device: ' + device.id);
       sendAttempts = 0;
@@ -302,6 +304,7 @@
       console.log('Sending ping attempt ' + sendAttempts + ' to device: ' + device.id);
       device.send(pingCmd.buffer); 
 
+    }, 1000);
     }, 1000);
 
   };
