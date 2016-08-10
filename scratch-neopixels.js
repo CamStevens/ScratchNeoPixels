@@ -55,7 +55,7 @@
   }
   
   ext.turnOffAllPixels = function() {
-    this.setPixels('0,36', '0,0,0');
+    this.setPixels('0,46', '0,0,0');
   }
   
   ext.setPixels = function(pixelRange, pixelColor) {
@@ -198,12 +198,14 @@
     switch (ringName) {
       case 'outer ring':
         return '0,23';
+      case 'middle ring':
+        return '24,39';
       case 'inner ring':
-        return '24,35';
+        return '41,46';
       case 'all pixels':
-        return '0,36';
+        return '0,46';
       case 'center pixel':
-        return '36,36';
+        return '40,40';
     }
   };
   
@@ -242,9 +244,9 @@
   
   ext._getStatus = function() {
     if (!connected)
-      return { status:1, msg:'Disconnected' };
+      return { status:1, msg:'NeoPixel Disconnected' };
     else
-      return { status:2, msg:'Connected' };
+      return { status:2, msg:'NeoPixel Connected' };
   };
 
   ext._deviceRemoved = function(dev) {
@@ -252,17 +254,36 @@
   };
 
   var poller = null;
+  
+  var potentialDevices = [];
   ext._deviceConnected = function(dev) {
+   console.log('Device ' + dev.id + ' discovered.');
+   if (dev.id == 'COM1') {
+     console.log('Skipping device: COM1');
+    return;
+   }
+   potentialDevices.push(dev);
+
+   if (!device) {
+    tryNextDevice();
+   }
+  };
+
+  function tryNextDevice() {
+   // If potentialDevices is empty, device will be undefined.
+   // That will get us back here next time a device is connected.
+   device = potentialDevices.shift();
+   if (!device) return;
+   
+    console.log('Attempting to connect to device: ' + device.id);
     sendAttempts = 0;
-    connected = true;
-    if (device) return;
-    
-    device = dev;
     device.open({ stopBits: 0, bitRate: 38400, ctsFlowControl: 0 });
+    
+    setTimeout(function() {
     device.set_receive_handler(function(data) {
+      console.log('Received response from device: ' + device.id);
       sendAttempts = 0;
-      var inputData = new Uint8Array(data);
-      processInput(inputData);
+      connected = true;
     }); 
 
     poller = setInterval(function() {
@@ -271,6 +292,7 @@
          Since _deviceRemoved is not
          called while using serial devices */
       if (sendAttempts >= 10) {
+        console.log('Maximum ping attempts exceeded for device: ' + device.id);
         connected = false;
         device.close();
         device = null;
@@ -278,9 +300,11 @@
         return;
       }
       
-      device.send(pingCmd.buffer); 
       sendAttempts++;
+      console.log('Sending ping attempt ' + sendAttempts + ' to device: ' + device.id);
+      device.send(pingCmd.buffer); 
 
+    }, 1000);
     }, 1000);
 
   };
@@ -295,7 +319,7 @@
   var descriptor = {
     blocks: [
       ['r', ' %m.rings ', 'pixelsForRing', 'all pixels'],
-      ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 36],
+      ['r', 'pixels %n to %n', 'pixelsForInterval', 0, 46],
       ['r', ' %m.colors ', 'stringForColor', 'red'],
       ['r', 'red %n green %n blue %n', 'stringForRGB', 255, 0, 0],
       [' ', 'turn off all pixels', 'turnOffAllPixels'],
@@ -313,7 +337,7 @@
     ],
     menus: {
       speeds: ['slow', 'medium', 'fast'],
-      rings: ['all pixels', 'outer ring', 'inner ring', 'center pixel'],
+      rings: ['all pixels', 'outer ring', 'middle ring', 'inner ring', 'center pixel'],
       colors: ['off', 'red', 'green', 'blue', 'white', 'yellow', 'cyan', 'magenta', 'orange', 'pink']
     },  
     url: 'http://camstevens.github.io/ScratchNeoPixels'
